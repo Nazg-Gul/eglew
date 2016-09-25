@@ -1648,7 +1648,7 @@ enum {
   EGLEW_ERROR_ATEXIT_FAILED = -2,
 };
 
-int eglwInit(void);
+int eglewInit(void);
 
 #ifdef __cplusplus
 }

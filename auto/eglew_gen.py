@@ -41,7 +41,16 @@ def processHeaderFile(filepath, global_symbols):
                 current_symbols = []
                 wrangler_lines.append(line)
             elif line.startswith("#include <EGL"):
-                pass
+                line = "// " + line
+                wrangler_lines.append(line)
+            elif line.startswith("#include <KHR"):
+                line = "// " + line
+                wrangler_lines.append(line)
+            elif line.startswith("#define WIN32_LEAN_AND_MEAN 1"):
+                wrangler_lines.append(line)
+                wrangler_lines.append("#endif\n")
+                wrangler_lines.append("#ifndef NOGDI\n")
+                wrangler_lines.append("#define NOGDI 1\n")
             else:
                 wrangler_lines.append(line)
     return wrangler_lines

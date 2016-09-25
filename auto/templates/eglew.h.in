@@ -25,6 +25,25 @@ extern "C" {
 #define EGLAPIENTRY
 #define EGL_EGLEXT_PROTOTYPES
 
+#include <stdint.h>
+
+typedef int32_t khronos_int32_t;
+typedef uint32_t khronos_uint64_t;
+typedef uint32_t khronos_utime_nanoseconds_t;
+typedef int32_t khronos_stime_nanoseconds_t;
+#  ifdef _WIN64
+typedef signed   long long int khronos_intptr_t;
+typedef unsigned long long int khronos_uintptr_t;
+typedef signed   long long int khronos_ssize_t;
+typedef unsigned long long int khronos_usize_t;
+#else
+typedef signed   long  int     khronos_intptr_t;
+typedef unsigned long  int     khronos_uintptr_t;
+typedef signed   long  int     khronos_ssize_t;
+typedef unsigned long  int     khronos_usize_t;
+#endif
+#define KHRONOS_SUPPORT_INT64 1
+
 %WRANGLER_LINES%
 
 enum {

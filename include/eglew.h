@@ -25,6 +25,25 @@ extern "C" {
 #define EGLAPIENTRY
 #define EGL_EGLEXT_PROTOTYPES
 
+#include <stdint.h>
+
+typedef int32_t khronos_int32_t;
+typedef uint32_t khronos_uint64_t;
+typedef uint32_t khronos_utime_nanoseconds_t;
+typedef int32_t khronos_stime_nanoseconds_t;
+#  ifdef _WIN64
+typedef signed   long long int khronos_intptr_t;
+typedef unsigned long long int khronos_uintptr_t;
+typedef signed   long long int khronos_ssize_t;
+typedef unsigned long long int khronos_usize_t;
+#else
+typedef signed   long  int     khronos_intptr_t;
+typedef unsigned long  int     khronos_uintptr_t;
+typedef signed   long  int     khronos_ssize_t;
+typedef unsigned long  int     khronos_usize_t;
+#endif
+#define KHRONOS_SUPPORT_INT64 1
+
 #ifndef __eglplatform_h_
 #define __eglplatform_h_
 
@@ -61,7 +80,7 @@ extern "C" {
  * by filing a bug against product "EGL" component "Registry".
  */
 
-#include <KHR/khrplatform.h>
+// #include <KHR/khrplatform.h>
 
 /* Macros used in EGL function prototype declarations.
  *
@@ -97,6 +116,9 @@ extern "C" {
 #if defined(_WIN32) || defined(__VC32__) && !defined(__CYGWIN__) && !defined(__SCITECH_SNAP__) /* Win32 and WinCE */
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN 1
+#endif
+#ifndef NOGDI
+#define NOGDI 1
 #endif
 #include <windows.h>
 
@@ -216,6 +238,7 @@ extern "C" {
 ** Khronos $Revision: 31039 $ on $Date: 2015-05-04 17:01:57 -0700 (Mon, 04 May 2015) $
 */
 
+// #include <EGL/eglplatform.h>
 
 /* Generated on date 20150504 */
 
@@ -232,7 +255,8 @@ extern "C" {
 #define EGL_VERSION_1_0 1
 typedef unsigned int EGLBoolean;
 typedef void *EGLDisplay;
-#include <KHR/khrplatform.h>
+// #include <KHR/khrplatform.h>
+// #include <EGL/eglplatform.h>
 typedef void *EGLConfig;
 typedef void *EGLSurface;
 typedef void *EGLContext;
@@ -561,6 +585,7 @@ extern "C" {
 ** Khronos $Revision$ on $Date$
 */
 
+// #include <EGL/eglplatform.h>
 
 #define EGL_EGLEXT_VERSION 20150508
 
@@ -1469,6 +1494,8 @@ extern teglGetSystemTimeNV *eglGetSystemTimeNV;
 #define EGL_NATIVE_SURFACE_TIZEN          0x32A1
 #endif /* EGL_TIZEN_image_native_surface */
 
+// #include <EGL/eglmesaext.h>
+// #include <EGL/eglextchromium.h>
 
 #ifdef __cplusplus
 }
@@ -1512,6 +1539,7 @@ extern teglGetSystemTimeNV *eglGetSystemTimeNV;
 extern "C" {
 #endif
 
+// #include <EGL/eglplatform.h>
 
 /* EGLSyncControlCHROMIUM requires 64-bit uint support */
 #if KHRONOS_SUPPORT_INT64
@@ -1569,6 +1597,7 @@ typedef EGLBoolean (EGLAPIENTRYP PFNEGLGETSYNCVALUESCHROMIUMPROC)
 extern "C" {
 #endif
 
+// #include <EGL/eglplatform.h>
 
 #ifndef EGL_MESA_drm_display
 #define EGL_MESA_drm_display 1

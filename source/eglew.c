@@ -14,7 +14,7 @@
  * limitations under the License
  */
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER ) && (_MSC_VER < 1800)
 #  define snprintf _snprintf
 #  define _CRT_SECURE_NO_WARNINGS
 #endif
@@ -27,7 +27,9 @@
 #include <sys/stat.h>
 
 #ifdef _WIN32
-#  define WIN32_LEAN_AND_MEAN
+#  ifndef WIN32_LEAN_AND_MEAN
+#    define WIN32_LEAN_AND_MEAN
+#  endif
 #  define VC_EXTRALEAN
 #  include <windows.h>
 

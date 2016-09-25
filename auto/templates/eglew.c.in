@@ -1,0 +1,134 @@
+/*
+ * Copyright 2016 Blender Foundation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License
+ */
+
+#ifdef _MSC_VER
+#  define snprintf _snprintf
+#  define _CRT_SECURE_NO_WARNINGS
+#endif
+
+#include <eglew.h>
+#include <assert.h>
+#include <stdio.h>
+#include <string.h>
+#include <sys/stat.h>
+
+#ifdef _WIN32
+#  define WIN32_LEAN_AND_MEAN
+#  define VC_EXTRALEAN
+#  include <windows.h>
+
+/* Utility macros. */
+
+typedef HMODULE DynamicLibrary;
+
+#  define dynamic_library_open(path)         LoadLibraryA(path)
+#  define dynamic_library_close(lib)         FreeLibrary(lib)
+#  define dynamic_library_find(lib, symbol)  GetProcAddress(lib, symbol)
+#else
+#  include <dlfcn.h>
+
+typedef void* DynamicLibrary;
+
+#  define dynamic_library_open(path)         dlopen(path, RTLD_NOW)
+#  define dynamic_library_close(lib)         dlclose(lib)
+#  define dynamic_library_find(lib, symbol)  dlsym(lib, symbol)
+#endif
+
+#define _LIBRARY_FIND_CHECKED(lib, name) \
+        name = (t##name *)dynamic_library_find(lib, #name); \
+        assert(name);
+
+#define _LIBRARY_FIND(lib, name) \
+        name = (t##name *)dynamic_library_find(lib, #name);
+
+#define EGL_LIBRARY_FIND_CHECKED(name) \
+        _LIBRARY_FIND_CHECKED(egl_lib, name)
+#define EGL_LIBRARY_FIND(name) _LIBRARY_FIND(egl_lib, name)
+
+static DynamicLibrary egl_lib;
+
+/* Function definitions. */
+%FUNCTION_DEFINITIONS%
+
+static DynamicLibrary dynamic_library_open_find(const char **paths) {
+  int i = 0;
+  while (paths[i] != NULL) {
+      DynamicLibrary lib = dynamic_library_open(paths[i]);
+      if (lib != NULL) {
+        return lib;
+      }
+      ++i;
+  }
+  return NULL;
+}
+
+static void eglewExit(void) {
+  if(egl_lib != NULL) {
+    /* Ignore errors. */
+    dynamic_library_close(egl_lib);
+    egl_lib = NULL;
+  }
+}
+
+/* Implementation function. */
+int eglewInit(void) {
+  /* Library paths. */
+#ifdef _WIN32
+  /* Expected in c:/windows/system or similar, no path needed. */
+  const char *egl_paths[] = {"egl.dll", NULL};
+#elif defined(__APPLE__)
+  /* Default installation path. */
+  /* TODO(sergey): This requires double-check. */
+  const char *egl_paths[] = {"libegl.dylib", NULL};
+#else
+  /* TODO(sergey): How can we make ABI detection more reliable? */
+  const char *egl_paths[] = {"libEGL.so",
+                             "libEGL.so.1",
+                             "libEGL.so.2",
+                             "libEGL.so.3",
+                             NULL};
+#endif
+  static int initialized = 0;
+  static int result = 0;
+  int error, driver_version;
+
+  if (initialized) {
+    return result;
+  }
+
+  initialized = 1;
+
+  error = atexit(eglewExit);
+  if (error) {
+    result = EGLEW_ERROR_ATEXIT_FAILED;
+    return result;
+  }
+
+  /* Load library. */
+  egl_lib = dynamic_library_open_find(egl_paths);
+
+  /* EGL library is mandatory to have. */
+  if (egl_lib == NULL) {
+    result = EGLEW_ERROR_OPEN_FAILED;
+    return result;
+  }
+
+  /* Fetch all function pointers. */
+%FUNCTION_LIBRARY_FIND%
+
+  result = EGLEW_SUCCESS;
+  return result;
+}

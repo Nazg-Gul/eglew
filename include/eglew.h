@@ -44,6 +44,10 @@ typedef unsigned long  int     khronos_usize_t;
 #endif
 #define KHRONOS_SUPPORT_INT64 1
 
+#if defined(__APPLE__)
+#  define MESA_EGL_NO_X11_HEADERS
+#endif
+
 #ifndef __eglplatform_h_
 #define __eglplatform_h_
 

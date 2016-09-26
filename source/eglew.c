@@ -217,10 +217,10 @@ int eglewInit(void) {
   const char *egl_paths[] = {"libegl.dylib", NULL};
 #else
   /* TODO(sergey): How can we make ABI detection more reliable? */
-  const char *egl_paths[] = {"libEGL.so",
-                             "libEGL.so.1",
+  const char *egl_paths[] = {"libEGL.so.1",
                              "libEGL.so.2",
                              "libEGL.so.3",
+                             "libEGL.so",
                              NULL};
 #endif
   static int initialized = 0;
